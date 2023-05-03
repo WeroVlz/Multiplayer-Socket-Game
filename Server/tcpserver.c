@@ -1,15 +1,6 @@
 /*
-
-   Lectura remota de una palabra para devolver el numero de vocales usando sockets pertenecientes
-   a la familia TCP, en modo conexion.
-   Codigo del servidor
-
-   Nombre Archivo: tcpserver.c
-   Archivos relacionados: num_vocales.h tcpclient.c 
-   Fecha: Febrero 2023
-
-   Compilacion: cc tcpserver.c -lnsl -o server
-   Ejecución: ./server
+   Compilation: cc tcpserver.c -lnsl -o server
+   Execution: ./server
 */
 
 #include <stdio.h>
@@ -20,23 +11,21 @@
 #include <signal.h>
 #include <unistd.h>
 
-#define  DIRSIZE   2048      /* longitud maxima parametro entrada/salida */
-#define  PUERTO   5006		/* numero puerto arbitrario */
-#define  jsonSIZE  10000
-#define  msgSIZE   2048      /* longitud maxima parametro entrada/salida */
+#define  PUERTO   5006		/* Host port */
+#define  msgSIZE   2048      /* Input/Output parameter maximum size */
 
 void initGameConnect4(int ,int );
 int check_winner(int board[6][7]);
    
 
-int                  sd, sd_actual;  /* descriptores de sockets */
-int                  addrlen;        /* longitud direcciones */
-struct sockaddr_in   sind, pin;      /* direcciones sockets cliente u servidor */
+int                  sd, sd_actual;  /* Sockets */
+int                  addrlen;        /* Address lenght */
+struct sockaddr_in   sind, pin;      /* Server and client socket address */
 
-/*  procedimiento de aborte del servidor, si llega una senal SIGINT */
-/* ( <ctrl> <c> ) se cierra el socket y se aborta el programa       */
+/*  Server abort procedure, if a SIGINT ( <ctrl> <c> ) */
+/* arrives the socket closes and the program aborts. */
 void aborta_handler(int sig){
-   printf("....abortando el proceso servidor %d\n",sig);
+   printf("....aborting the server process %d\n",sig);
    close(sd);  
    close(sd_actual); 
    exit(1);
@@ -52,15 +41,15 @@ int main(){
 	char passwordTwo[] = "password2";
 
 	
-	int clientsLimit = 2; // Limite de clientes que acepta el servidor.
-	int contClients = 0;  // Clientes conectados al momento.
+	int clientsLimit = 2; // Maximum of possible clients.
+	int contClients = 0;  // Clients currently connected.
 	pid_t child_pid;
 	
 	int playerOneFlag = 0;
 	int playerTwoFlag = 0;
 
-	int mainProcess = getpid(); //ID del proceso principal.
-	char  msg[msgSIZE];	     /* parametro entrada y salida */
+	int mainProcess = getpid(); //Main process ID.
+	char  msg[msgSIZE];	    //Input/Output parameter.
 
 	/*
 	When the user presses <Ctrl + C>, the aborta_handler function will be called, 
@@ -72,37 +61,28 @@ int main(){
    	perror("Could not set signal handler");
       return 1;
    }
-       //signal(SIGINT, aborta);      /* activando la senal SIGINT */
 
-/* obtencion de un socket tipo internet */
 	if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		perror("[-] Could not create socket\n");
 		exit(1);
 	}
 
-/* asignar direcciones en la estructura de direcciones */
 	sind.sin_family = AF_INET;
-	sind.sin_addr.s_addr = INADDR_ANY;   /* INADDR_ANY=0x000000 = yo mismo */
-	sind.sin_port = htons(PUERTO);       /*  convirtiendo a formato red */
+	sind.sin_addr.s_addr = INADDR_ANY;
+	sind.sin_port = htons(PUERTO);
 
-/* asociando el socket al numero de puerto */
 	if (bind(sd, (struct sockaddr *)&sind, sizeof(sind)) == -1) {
 		perror("bind");
 		exit(1);
 	}
 			
 
-/* ponerse a escuchar a traves del socket */
 	if (listen(sd, 6) != 0) {
 		perror("[-]Error in binding.\n");
 		exit(1);
 	}else{
 		printf("[+]Listening...\n");
 	}
-
-	
-/* esperando que un cliente solicite un servicio */
-
 
 	while(1){
 	 	client1 = accept(sd, (struct sockaddr *)&pin,&addrlen);
@@ -121,7 +101,7 @@ int main(){
 
 
 void initGameConnect4(int client1, int client2){
-	char  msg[msgSIZE];	     /* parametro entrada y salida */
+	char  msg[msgSIZE];
 	char tokenPositionOne[msgSIZE];
 	char tokenPositionTwo[msgSIZE];
 	char opMove[msgSIZE];
