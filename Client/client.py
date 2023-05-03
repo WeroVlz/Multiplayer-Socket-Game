@@ -5,17 +5,16 @@ import os
 import math
 import socket
 
-os.environ["SDL_AUDIODRIVER"] = "dummy"
+os.environ["SDL_AUDIODRIVER"] = "dummy"  ## Ignore audio warnings
 
-HOST = "PCEDGAR" 
-PORT = 5006
+HOST = "172.18.2.3"    ## Server IP Address
+PORT = 5006            ## Host Port
 
 #Counters
 SQUARESIZE = 70
 ROW_COUNT = 6
 COLUMN_COUNT = 7
 RADIUS = 30
-click_mouse = True
 
 #COLORES
 BLUE = (0, 0, 255)
@@ -141,14 +140,14 @@ class Button:
             self.dynamic_elecation = self.elevation
             self.top_color = RED
 
-## Pygame variables ----------------------
-game_over = False
+## Script variables ----------------------
 turn = 0
-## ---------------------------------------
-
 game_Option = 0
+game_over = False
+click_mouse = True
 auth_Flag = False
 game_Flag = False
+## ---------------------------------------
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -198,7 +197,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     init_Game = int(s.recv(1024).decode('iso-8859-1'))
     print("Game is starting...\n")
 
-    ## GUI
+    
+    ## ------- GUI ----------
 
     pygame.init()
 
