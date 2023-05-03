@@ -7,7 +7,7 @@ import socket
 
 os.environ["SDL_AUDIODRIVER"] = "dummy"
 
-HOST = "172.18.2.3" 
+HOST = "PCEDGAR" 
 PORT = 5006
 
 #Counters
@@ -158,29 +158,31 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     print(message)
 
     while game_Option != 2:
-        print("\nElija una opción:\n1.Instrucciones de uso y juego.\n2.Autentificar e iniciar juego.\n")
+        print("\nChoose an option:\n1.Game instructions.\n2.Authenticate and begin game.\n")
         game_Option = input()
         if game_Option.isdigit():
             game_Option = int(game_Option)
         else:
-            print("Ingrese una opción correcta.\n")
+            print("Choose a correct option please.\n")
 
         if game_Option == 1:
-            print("Para empezar el juego tienes que presionar la tecla '2' en el menú principal."
-                    " Primero tendrás que ingresar un usuario y una contraseña que sean correctas. Una vez"
-                    " ingresadas deberás esperar a que otro jugador ingrese al juego. Una vez que ambos jugadores"
-                    " se hayan autenticado exitosamente comenzará el juego. El servidor asignará aleatoriamente quien"
-                    " empieza el juego y que color de ficha tendrá cada jugador. El objetivo del juego es ser el primero"
-                    " en colocar cuatro fichas del mismo color en línea, ya sea vertical, horizontal o diagonalmente."
-                    " Cada jugador coloca una ficha en su turno en una columna vacía, y la ficha cae hasta el lugar"
-                    " más bajo posible en esa columna. Para esto, en el tablero habrá un boton por cada columna, deberás"
-                    " hacer clic en la columna donde desees colocar tu ficha. Una vez terminado el juego se cerrará el tablero"
-                    " y mostrará al jugador ganador.")
+            print("To start the game you have to press the '2' key in the main menu."
+                    " First you will need to enter a correct username and password. Once logged"
+                    " in you must wait for another player to enter the game. Once both players have"
+                    " successfully authenticated, the game will start. The server will randomly"
+                    " assign who starts the game and what token color each player will have."
+                    " The object of the game is to be the first to place four tokens of the"
+                    " same color in a row, either vertically, horizontally or diagonally."
+                    " Each player places a token in turn in an empty column, and the token"
+                    " falls to the lowest possible place in that column."
+                    " For this, on the board there will be a button for each column, you must"
+                    " click on the column where you want to place your token."
+                    " Once the game is over, the board will close and show the winning player.")
     
     while not auth_Flag:
-        print("Introduzca su usario: ")
+        print("Enter your username: ")
         user = input()
-        print("Introduzca la contraseña: ")
+        print("Enter your password: ")
         password = input()
         auth = user + " " + password
         
@@ -189,24 +191,24 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         auth_Response = s.recv(1024).decode('iso-8859-1')
 
         if auth_Response == "0":
-            print("Usuario o contraseña incorrecta. Favor de intentar otra vez.\n")
+            print("Incorrect user/password. Please try again.\n")
         else:
             auth_Flag = True
 
     init_Game = int(s.recv(1024).decode('iso-8859-1'))
-    print("Iniciando juego...\n")
+    print("Game is starting...\n")
 
     ## GUI
 
     pygame.init()
 
-    pygame.display.set_caption('Conecta 4')
+    pygame.display.set_caption('Connect4')
     width = COLUMN_COUNT * SQUARESIZE
     height = (ROW_COUNT+1) * SQUARESIZE
     size = (width, height)
     screen = pygame.display.set_mode(size)
     gui_font = pygame.font.Font(None,20)
-    buttons_array = [Button('FICHA', 50, 30, (10+i, 20),int(i/70), 5) for i in range(0, 490, 70)]
+    buttons_array = [Button('TOKEN', 50, 30, (10+i, 20),int(i/70), 5) for i in range(0, 490, 70)]
     board = create_board()
     finish_flag = False
 
@@ -227,18 +229,18 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
         winner = check_winner(board)
         if winner == 1:
-            print("Jugador uno con fichas rojas gana!")
+            print("Player one with red tokens wins!")
             finish_flag = True
             continue
         elif winner == 2:
-            print("Jugador dos con fichas amarillas gana!")
+            print("Player two with yellow tokens wins!")
             finish_flag = True
             continue
 
         if token == 0:
             token = 2
 
-        print("Turno " + turn + ", le toca a jugador " + str(token))
+        print("Turn " + turn + ", player: " + str(token) + " moves.")
 
         while click_mouse:
             for event in pygame.event.get():
@@ -257,11 +259,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
         winner = check_winner(board)
         if winner == 1:
-            print("Jugador uno con fichas rojas gana!")
+            print("Player one with red tokens wins!")
             finish_flag = True
             continue
         elif winner == 2:
-            print("Jugador dos con fichas amarillas gana!")
+            print("Player two with yellow tokens wins!")
             finish_flag = True
             continue
         click_mouse = True
